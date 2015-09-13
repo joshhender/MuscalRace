@@ -58,20 +58,6 @@ public class GameManager : MonoBehaviour {
 		score = 0;
 	}
 
-	void Update()
-	{
-		if (timer == 0 && hasStarted) {
-			StopTimer ();
-			EndGame ();
-		}
-	}
-
-	void EndGame ()
-	{
-		CancelInvoke ("SpawnNotes");
-		ClearScreen ();
-	}
-
 	public void StartGame()
 	{
 		StartCoroutine (RandomNote ());
@@ -98,20 +84,9 @@ public class GameManager : MonoBehaviour {
 	{
 		string minutes = Mathf.Floor (timer / 60).ToString ("00");
 		string seconds = Mathf.Floor (timer % 60).ToString ("00");
-		if (timer <= 10 && !isFlashing)
-			InvokeRepeating ("Flash", 0.0f, 0.5f);
+		
 		if(timerText)
 			timerText.text = minutes + ":" + seconds;
-	}
-
-	void Flash()
-	{
-		if(!isFlashing)
-			isFlashing = true;
-		if (timerText.color == Color.black)
-			timerText.color = Color.red;
-		else if (timerText.color == Color.red)
-			timerText.color = Color.black;
 	}
 
 	public void StopTimer()
@@ -120,30 +95,6 @@ public class GameManager : MonoBehaviour {
 		CancelInvoke ("Flash");
 		hasStarted = false;
 		timer = timerResetNum;
-	}
-
-	void SpawnNotes()
-	{
-		if (spawnCorrectNote <= 0) {
-			Spawn (noteToGuess - 1);
-			spawnCorrectNote = Random.Range (3, 7);
-		} else {
-			Spawn(Random.Range (0, noteObjs.Length));
-			spawnCorrectNote--;
-		}
-	}
-	
-	void Spawn(int index1)
-	{
-		int posIndex = Random.Range (0, spawners.Length);
-		while (posIndex == previousIndex) {
-			posIndex = Random.Range (0, spawners.Length);
-		}
-		previousIndex = posIndex;
-		
-		Instantiate (noteObjs [index1].gameObject, spawners[posIndex].transform.position,
-		             spawners[posIndex].transform.rotation);
-
 	}
 
 	public void CheckAnswer(Note note)
@@ -155,35 +106,21 @@ public class GameManager : MonoBehaviour {
 			correctSFX.Play ();
 			Debug.Log ("Correct!");
 			score += 15;
-			UpdateScore ();
+
 			CancelInvoke ("SpawnNotes");
 			StartCoroutine (RandomNote ());
 			InvokeRepeating ("SpawnNotes", 1, 0.75f);
 		} else {
 			Debug.Log ("Incorrect!");
 			score -= 5;
-			UpdateScore();
-		}
-	}
 
-	void UpdateScore ()
-	{
-		if (score < 0)
-			score = 0;
-		scoreText.text = "Score: " + score.ToString ();
+		}
 	}
 	
 	IEnumerator RestartGame ()
 	{
 		yield return new WaitForSeconds (3f);
 		Application.LoadLevel (Application.loadedLevel);
-	}
-
-	void ClearScreen()
-	{
-		GameObject[] notesOnScreen = GameObject.FindGameObjectsWithTag ("Note");
-		foreach (GameObject go in notesOnScreen)
-			Destroy (go);
 	}
 
 	IEnumerator RandomNote()
