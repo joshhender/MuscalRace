@@ -34,6 +34,6 @@ public class Note : MonoBehaviour {
 
 	public void Clicked()
 	{
-		GameManager.instance.CheckAnswer (this);
+		//GameManager.instance.CheckAnswer (this);
 	}
 }

@@ -70,9 +70,6 @@ public class AICar : MonoBehaviour {
             return;
         }
 
-        Quaternion rot = Quaternion.LookRotation(transform.position - target.position,
-                                                 Vector3.forward);
-
         Vector3 dir = target.position - transform.position;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);

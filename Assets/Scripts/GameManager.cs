@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.UI;
 
@@ -25,21 +24,30 @@ public class GameManager : MonoBehaviour {
 
 	public GameObject[] spawners;
 	public RectTransform[] noteObjs;
+    public GameObject[] noteBtns;
 	public int noteToGuess;
 	public AudioSource correctSFX;
 	public Text timerText;
 	public Text scoreText;
 	public int score;
 	public float timer;
-	public float timerResetNum;
 	public AudioSource[] notes;
+    public int notesLeft;
+
+    [HideInInspector()]
+    public NoteManager NM;
+    [HideInInspector()]
+    public UIManager UIM;
+    [HideInInspector()]
+	public float timerResetNum;
 	
 	int spawnCorrectNote;
-	int previousIndex = 1;
 	bool hasStarted;
 	bool isFlashing;
 
 	public static GameManager instance;
+
+
 
 	void Awake()
 	{
@@ -54,68 +62,108 @@ public class GameManager : MonoBehaviour {
 	void StartUp()
 	{
 		hasStarted = false;
-		spawners = GameObject.FindGameObjectsWithTag ("Spawner");
-		score = 0;
-	}
+        NM = GameObject.Find("NoteManager").GetComponent<NoteManager>();
+        UIM = GameObject.Find("UIManager").GetComponent<UIManager>();
+        score = 0;
+    }
 
 	public void StartGame()
 	{
-		StartCoroutine (RandomNote ());
-		spawnCorrectNote = Random.Range (3, 7);
-		InvokeRepeating ("SpawnNotes", 1, 0.75f);
-		StartTimer (timerResetNum);
+        hasStarted = true;
+        NM.NewNote();
 	}
 
 	public void StartTimer(float time)
 	{
 		timer = time;
 		timerResetNum = timer;
+        UpdateText();
 		InvokeRepeating ("DecreaseTimeRemaining", 1.0f, 1.0f);
 		hasStarted = true;
 	}
 
 	void DecreaseTimeRemaining()
 	{
+        if(timer <= 0)
+        {
+            StopTimer();
+            CheckAnswer(-1);
+            //timerText.text = "00";
+            return;
+        }
 		timer--;
 		UpdateText ();
 	}
 
 	void UpdateText()
 	{
-		string minutes = Mathf.Floor (timer / 60).ToString ("00");
-		string seconds = Mathf.Floor (timer % 60).ToString ("00");
+        //string minutes = Mathf.Floor (timer / 60).ToString ("00");
+        //string seconds = Mathf.Floor (timer % 60).ToString ("00");
+
+        string seconds = timer.ToString("00");
 		
-		if(timerText)
-			timerText.text = minutes + ":" + seconds;
+		if(UIM.timerText)
+			UIM.timerText.text = seconds;
 	}
 
 	public void StopTimer()
 	{
+        if (!hasStarted)
+            return;
 		CancelInvoke ("DecreaseTimeRemaining");
 		CancelInvoke ("Flash");
 		hasStarted = false;
 		timer = timerResetNum;
 	}
 
-	public void CheckAnswer(Note note)
-	{
-		if (!hasStarted)
-			return;
+    public bool CheckAnswer(int noteNum)
+    {
 
-		if (note.pitch == noteToGuess) {
-			correctSFX.Play ();
-			Debug.Log ("Correct!");
-			score += 15;
+        if (noteNum == NM.noteToGuess)
+        {
+            notesLeft--;
+            if(notesLeft <= 0)
+            {
+                StopTimer();
+                EndGame(true);
+                return true;
+            }
+            StopTimer();
+            StartCoroutine(NewNote());
+            return true;
+        }
+        if(noteNum != -1)
+            StopTimer();
+        UIM.IncorrectAnswer();
+        //StartCoroutine(NewNote());
+        return false;
+    }
 
-			CancelInvoke ("SpawnNotes");
-			StartCoroutine (RandomNote ());
-			InvokeRepeating ("SpawnNotes", 1, 0.75f);
-		} else {
-			Debug.Log ("Incorrect!");
-			score -= 5;
+    public void EndGame(bool hasWon)
+    {
+        if (hasWon)
+        {
+            Debug.Log("You Win!");
+            UIM.finishText.text = "Finished!";
+            UIM.strikeText.text = "Strikes: " + UIM.strikeNum.ToString();
+            UIM.finishPanel.SetActive(true);
+        }
+        else
+        {
+            Debug.Log("You Lose!");
+            StartCoroutine(RestartGame());
+        }
+    }
 
-		}
-	}
+    public IEnumerator NewNote()
+    {
+        yield return new WaitForSeconds(1.5f);
+        foreach(GameObject go in noteBtns)
+        {
+            go.GetComponent<ButtonUtil>().ClearSigns();
+        }
+        NM.NewNote();
+    }
 	
 	IEnumerator RestartGame ()
 	{
