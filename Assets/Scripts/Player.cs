@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.Assertions.Must;
 using UnityEngine.UI;
 using UnityStandardAssets.Utility;
 
@@ -64,12 +63,16 @@ public class Player : MonoBehaviour {
     {
         if (finished || !hasStarted)
             return;
-        if (!Input.GetMouseButton(0))
-            return;
-        var mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //if (!Input.GetMouseButton(0))
+        //    return;
+        var mousePosition = Vector3.zero;
+#if UNITY_EDITOR
+        mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+#endif
 
-        mousePosition.magnitude.MustNotBeApproximatelyEqual(transform.position.magnitude);
-
+//#if UNITY_ANDROID
+//        mousePosition = Camera.main.ScreenToWorldPoint(Input.touches[Input.touchCount].deltaPosition);
+//#endif
         Quaternion rot = Quaternion.LookRotation(transform.position - mousePosition,
                                                  Vector3.forward);
         transform.rotation = rot;

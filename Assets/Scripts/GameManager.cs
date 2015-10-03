@@ -3,36 +3,18 @@ using System.Collections;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
-
-	public class Tuple<A,B> {
-		public A a;
-		public B b;
-		
-		public Tuple(A a, B b) {
-			this.a = a;
-			this.b = b;
-		}
-
-		public bool IsEqualTo(Tuple<A, B> other)
-		{
-			if (this.a.Equals (other.a) && this.b.Equals (other.b))
-				return true;
-			else
-				return false;
-		}
-	}
-
-	public GameObject[] spawners;
+	
 	public RectTransform[] noteObjs;
     public GameObject[] noteBtns;
-	public int noteToGuess;
+	public AudioSource[] notes;
 	public AudioSource correctSFX;
 	public Text timerText;
 	public Text scoreText;
+	public int noteToGuess;
 	public int score;
-	public float timer;
-	public AudioSource[] notes;
     public int notesLeft;
+	public float timer;
+    public int gas;
 
     [HideInInspector()]
     public NoteManager NM;
@@ -46,25 +28,38 @@ public class GameManager : MonoBehaviour {
 	bool isFlashing;
 
 	public static GameManager instance;
-
-
-
+    
 	void Awake()
 	{
 		if (instance == null)
 			instance = this;
 		else if (instance != this)
-			Destroy (this.gameObject);
-
-		StartUp ();
+			Destroy (gameObject);
+        StartUp();
 	}
+
+    void OnLevelWasLoaded()
+    {
+        StartUp();
+    }
 
 	void StartUp()
 	{
 		hasStarted = false;
-        NM = GameObject.Find("NoteManager").GetComponent<NoteManager>();
-        UIM = GameObject.Find("UIManager").GetComponent<UIManager>();
-        score = 0;
+        gas = PlayerPrefs.GetInt("Gas");
+        if(Application.loadedLevelName == "Music")
+        {
+            NM = GameObject.Find("NoteManager").GetComponent<NoteManager>();
+            score = 0;
+        }
+            UIM = GameObject.Find("UIManager").GetComponent<UIManager>();
+        if(Application.loadedLevelName == "Main Menu")
+        {
+            UIM.gasSlider.value = gas;
+            UIM.gasFill.color = Color.Lerp(Color.red, Color.green, (float)gas / 5);
+            if (gas <= 0)
+                UIM.raceBtn.interactable = false;
+        }
     }
 
 	public void StartGame()
@@ -135,7 +130,6 @@ public class GameManager : MonoBehaviour {
         if(noteNum != -1)
             StopTimer();
         UIM.IncorrectAnswer();
-        //StartCoroutine(NewNote());
         return false;
     }
 
@@ -152,6 +146,20 @@ public class GameManager : MonoBehaviour {
         {
             Debug.Log("You Lose!");
             StartCoroutine(RestartGame());
+        }
+        if(Application.loadedLevelName == "Music")
+        {
+            gas++;
+            if (gas > 5)
+                gas = 5;
+            PlayerPrefs.SetInt("Gas", gas);
+        }
+        else if(Application.loadedLevelName == "Race")
+        {
+            gas--;
+            if (gas < 0)
+                gas = 0;
+            PlayerPrefs.SetInt("Gas", gas);
         }
     }
 

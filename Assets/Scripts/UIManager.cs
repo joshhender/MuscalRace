@@ -10,6 +10,9 @@ public class UIManager : MonoBehaviour {
     public Text timerText;
     public Text strikeText;
     public Text finishText;
+    public Slider gasSlider;
+    public Image gasFill;
+    public Button raceBtn;
 
     [HideInInspector()]
     public int strikeNum;
