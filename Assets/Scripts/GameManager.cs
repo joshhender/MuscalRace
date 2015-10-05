@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.Analytics;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 	
@@ -14,6 +16,7 @@ public class GameManager : MonoBehaviour {
 	public int score;
     public int notesLeft;
 	public float timer;
+    [Range(0, 5)]
     public int gas;
 
     [HideInInspector()]
@@ -22,9 +25,10 @@ public class GameManager : MonoBehaviour {
     public UIManager UIM;
     [HideInInspector()]
 	public float timerResetNum;
+    [HideInInspector()]
+	public bool hasStarted;
 	
 	int spawnCorrectNote;
-	bool hasStarted;
 	bool isFlashing;
 
 	public static GameManager instance;
@@ -47,25 +51,25 @@ public class GameManager : MonoBehaviour {
 	{
 		hasStarted = false;
         gas = PlayerPrefs.GetInt("Gas");
+        UIM = GameObject.Find("UIManager").GetComponent<UIManager>();
         if(Application.loadedLevelName == "Music")
         {
             NM = GameObject.Find("NoteManager").GetComponent<NoteManager>();
             score = 0;
         }
-            UIM = GameObject.Find("UIManager").GetComponent<UIManager>();
-        if(Application.loadedLevelName == "Main Menu")
+        else if(Application.loadedLevelName == "Main Menu")
         {
-            UIM.gasSlider.value = gas;
-            UIM.gasFill.color = Color.Lerp(Color.red, Color.green, (float)gas / 5);
-            if (gas <= 0)
-                UIM.raceBtn.interactable = false;
+            UIM.SetUpGas(gas);
         }
     }
 
 	public void StartGame()
 	{
         hasStarted = true;
-        NM.NewNote();
+        if(Application.loadedLevelName == "Music")
+        {
+            NM.NewNote();
+        }
 	}
 
 	public void StartTimer(float time)
@@ -135,20 +139,18 @@ public class GameManager : MonoBehaviour {
 
     public void EndGame(bool hasWon)
     {
-        if (hasWon)
-        {
-            Debug.Log("You Win!");
-            UIM.finishText.text = "Finished!";
-            UIM.strikeText.text = "Strikes: " + UIM.strikeNum.ToString();
-            UIM.finishPanel.SetActive(true);
-        }
-        else
-        {
-            Debug.Log("You Lose!");
-            StartCoroutine(RestartGame());
-        }
+        hasStarted = false;
         if(Application.loadedLevelName == "Music")
         {
+            if (hasWon)
+            {
+                Debug.Log("You Win!");
+                UIM.Finish(hasWon);
+            } else {
+                Debug.Log("You Lose!");
+                StartCoroutine(RestartGame());
+            }
+
             gas++;
             if (gas > 5)
                 gas = 5;
@@ -156,6 +158,10 @@ public class GameManager : MonoBehaviour {
         }
         else if(Application.loadedLevelName == "Race")
         {
+            Player player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+            player.place = UIM.finishedCars.IndexOf(player.gameObject);
+            UIM.Finish(player.place + 1 == 1);
+            hasStarted = false;
             gas--;
             if (gas < 0)
                 gas = 0;

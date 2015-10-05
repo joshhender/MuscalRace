@@ -59,6 +59,9 @@
      <Compile Include="Assets\Scripts\WaypointCircuit.cs" />
      <Compile Include="Assets\Scripts\WaypointProgressTracker.cs" />
      <None Include="Assets\ColorfulButtons\Credits.txt" />
+ <Reference Include="UnityEngine.Advertisements">
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/UnityEngine.Advertisements.dll</HintPath>
+ </Reference>
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

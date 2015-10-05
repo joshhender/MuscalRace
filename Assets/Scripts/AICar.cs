@@ -33,13 +33,17 @@ public class AICar : MonoBehaviour {
         finished = false;
         laps = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().laps;
         hasStarted = false;
+        moveSpeed = Random.Range(20, 30);
     }
 
     public void Finish()
     {
+        if (finished)
+            return;
         if (currentLap >= laps)
         {
             finished = true;
+            GameManager.instance.UIM.finishedCars.Add(gameObject);
         }
         else
         {

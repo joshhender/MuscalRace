@@ -18,7 +18,7 @@ public class PlaceTracker : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (player.finished)
+        if (!GameManager.instance.hasStarted)
             return;
         foreach(AICar car in cars)
         {

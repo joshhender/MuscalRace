@@ -24,16 +24,20 @@ public class Player : MonoBehaviour {
     Vector2 targetPos;
     Transform target;
     bool hasStarted = false;
-    static float stoppingDistance = 2;
+    static float stoppingDistance = 1.5f;
 
     public void Finish()
     {
         if (currentLap >= laps)
         {
+            currentLap++;
             finished = true;
+            GameManager.instance.UIM.finishedCars.Add(gameObject);
+            GameManager.instance.EndGame(place == 1);
             Debug.Log("Finished!");
         }
-        else{ 
+        else
+        {
             currentLap++;
             lapsText.text = string.Format("Lap {0}/{1}", currentLap.ToString(), laps.ToString());
         }
@@ -50,7 +54,7 @@ public class Player : MonoBehaviour {
         lapsText = GameObject.Find("Laps").GetComponent<Text>();
         lapsText.text = string.Format("Lap 1/{0}", laps.ToString());
         placeText = GameObject.Find("Place").GetComponent<Text>();
-        placeText.text = "Place 1/5";
+        placeText.text = "Place 5/5";
         finished = false;
         waypointCircuit = GameObject.FindGameObjectWithTag("WaypointCircuit").GetComponent<WaypointCircuit>();
         waypoints = waypointCircuit.Waypoints;
@@ -61,7 +65,7 @@ public class Player : MonoBehaviour {
 
     void FixedUpdate()
     {
-        if (finished || !hasStarted)
+        if (!GameManager.instance.hasStarted || !hasStarted)
             return;
         //if (!Input.GetMouseButton(0))
         //    return;
