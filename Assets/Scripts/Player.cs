@@ -70,13 +70,15 @@ public class Player : MonoBehaviour {
         //if (!Input.GetMouseButton(0))
         //    return;
         var mousePosition = Vector3.zero;
-#if UNITY_EDITOR
         mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-#endif
+        if (Input.touchCount > 0)
+        {
+            mousePosition = Camera.main.ScreenToWorldPoint(
+                Input.touches[0].deltaPosition);
 
-//#if UNITY_ANDROID
-//        mousePosition = Camera.main.ScreenToWorldPoint(Input.touches[Input.touchCount].deltaPosition);
-//#endif
+        }
+        else
+            return;
         Quaternion rot = Quaternion.LookRotation(transform.position - mousePosition,
                                                  Vector3.forward);
         transform.rotation = rot;

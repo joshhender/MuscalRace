@@ -39,7 +39,7 @@ public class UIManager : MonoBehaviour {
             strikeText.text = "Strikes: " + strikeNum.ToString();
             return;
         }
-        StartCoroutine(GameManager.instance.NewNote());
+        StartCoroutine(GameManager.instance.NewNote(false));
     }
 
     public void SetUpGas(int gas)

@@ -121,14 +121,13 @@ public class GameManager : MonoBehaviour {
         if (noteNum == NM.noteToGuess)
         {
             notesLeft--;
-            if(notesLeft <= 0)
-            {
-                StopTimer();
-                EndGame(true);
-                return true;
-            }
             StopTimer();
-            StartCoroutine(NewNote());
+            //if(notesLeft <= 0)
+            //{
+            //    EndGame(true);
+            //    return true;
+            //}
+            StartCoroutine(NewNote(notesLeft <= 0));
             return true;
         }
         if(noteNum != -1)
@@ -169,9 +168,14 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    public IEnumerator NewNote()
+    public IEnumerator NewNote(bool end)
     {
         yield return new WaitForSeconds(1.5f);
+        if (end)
+        {
+            EndGame(true);
+            yield break;
+        }
         foreach(GameObject go in noteBtns)
         {
             go.GetComponent<ButtonUtil>().ClearSigns();
