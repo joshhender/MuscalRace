@@ -23,7 +23,7 @@ public class UIManager : MonoBehaviour {
 
     public void IncorrectAnswer()
     {
-        noteBtns[GameManager.instance.NM.noteToGuess].GetComponent<ButtonUtil>().correct.SetActive(true);
+        noteBtns[GameManager.instance.NM.letterToGuess].GetComponent<ButtonUtil>().correct.SetActive(true);
         AddStrike();
     }
 

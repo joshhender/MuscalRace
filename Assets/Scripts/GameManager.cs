@@ -118,7 +118,7 @@ public class GameManager : MonoBehaviour {
     public bool CheckAnswer(int noteNum)
     {
 
-        if (noteNum == NM.noteToGuess)
+        if (noteNum == NM.letterToGuess)
         {
             notesLeft--;
             StopTimer();
@@ -143,10 +143,8 @@ public class GameManager : MonoBehaviour {
         {
             if (hasWon)
             {
-                Debug.Log("You Win!");
                 UIM.Finish(hasWon);
             } else {
-                Debug.Log("You Lose!");
                 StartCoroutine(RestartGame());
             }
 

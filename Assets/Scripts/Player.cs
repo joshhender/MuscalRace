@@ -34,7 +34,6 @@ public class Player : MonoBehaviour {
             finished = true;
             GameManager.instance.UIM.finishedCars.Add(gameObject);
             GameManager.instance.EndGame(place == 1);
-            Debug.Log("Finished!");
         }
         else
         {
@@ -74,7 +73,8 @@ public class Player : MonoBehaviour {
         if (Input.touchCount > 0)
         {
             mousePosition = Camera.main.ScreenToWorldPoint(
-                Input.touches[0].deltaPosition);
+                new Vector3(Input.GetTouch(0).position.x,
+                Input.GetTouch(0).position.y, 0));
 
         }
         else

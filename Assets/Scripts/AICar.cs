@@ -4,14 +4,16 @@ using UnityStandardAssets.Utility;
 
 public class AICar : MonoBehaviour {
 
-    public float moveSpeed;
+    public float minSpeed;
+    public float maxSpeed;
     public float stoppingDistance;
     public float rotateSpeed;
     public Transform target;
-
+    public int laps;
+    public int currentWaypoint;
     public int place;
     public int currentLap;
-    public int currentWaypoint;
+
     [HideInInspector]
     public Vector2 distanceToWaypoint;
 
@@ -21,7 +23,7 @@ public class AICar : MonoBehaviour {
     Vector2 targetPos;
     bool finished;
     bool hasStarted = false;
-    public int laps;
+    float moveSpeed;
 
     void Start()
     {
@@ -33,7 +35,7 @@ public class AICar : MonoBehaviour {
         finished = false;
         laps = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().laps;
         hasStarted = false;
-        moveSpeed = Random.Range(20, 30);
+        moveSpeed = Random.Range(minSpeed, maxSpeed);
     }
 
     public void Finish()
