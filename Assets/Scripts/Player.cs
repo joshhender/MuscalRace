@@ -66,10 +66,7 @@ public class Player : MonoBehaviour {
     {
         if (!GameManager.instance.hasStarted || !hasStarted)
             return;
-        //if (!Input.GetMouseButton(0))
-        //    return;
         var mousePosition = Vector3.zero;
-        mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         if (Input.touchCount > 0)
         {
             mousePosition = Camera.main.ScreenToWorldPoint(

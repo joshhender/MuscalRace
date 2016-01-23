@@ -1,20 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
-using UnityEngine.Analytics;
-using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 	
-	public RectTransform[] noteObjs;
     public GameObject[] noteBtns;
 	public AudioSource[] notes;
+    public GameObject[] playerCars;
 	public AudioSource correctSFX;
-	public Text timerText;
-	public Text scoreText;
-	public int noteToGuess;
-	public int score;
-    public int notesLeft;
+	public int noteToGuess, notesLeft, currentCar;
 	public float timer;
     [Range(0, 5)]
     public int gas;
@@ -28,8 +22,8 @@ public class GameManager : MonoBehaviour {
     [HideInInspector()]
 	public bool hasStarted;
 	
-	int spawnCorrectNote;
-	bool isFlashing;
+    Transform spawnPoint;
+    int notesRestartNum = 5;
 
 	public static GameManager instance;
     
@@ -37,7 +31,7 @@ public class GameManager : MonoBehaviour {
 	{
 		if (instance == null)
 			instance = this;
-		else if (instance != this)
+		if (instance != this)
 			Destroy (gameObject);
         StartUp();
 	}
@@ -54,12 +48,27 @@ public class GameManager : MonoBehaviour {
         UIM = GameObject.Find("UIManager").GetComponent<UIManager>();
         if(Application.loadedLevelName == "Music")
         {
+            notesRestartNum = notesLeft;
             NM = GameObject.Find("NoteManager").GetComponent<NoteManager>();
-            score = 0;
+            noteBtns = UIM.noteBtns;
         }
         else if(Application.loadedLevelName == "Main Menu")
         {
             UIM.SetUpGas(gas);
+            currentCar = -1;
+            notesLeft = notesRestartNum;
+        }
+        else if(Application.loadedLevelName == "Race")
+        {
+            spawnPoint = GameObject.FindGameObjectWithTag("SpawnPoint").transform;
+            try
+            {
+                Instantiate(playerCars[currentCar], 
+                    spawnPoint.position, playerCars[currentCar].transform.rotation);
+            }
+            catch(System.IndexOutOfRangeException)
+            {
+            }
         }
     }
 
@@ -115,18 +124,19 @@ public class GameManager : MonoBehaviour {
 		timer = timerResetNum;
 	}
 
+    public void SetCar(int car)
+    {
+        currentCar = car;
+    }
+
     public bool CheckAnswer(int noteNum)
     {
 
         if (noteNum == NM.letterToGuess)
         {
+            correctSFX.Play();
             notesLeft--;
             StopTimer();
-            //if(notesLeft <= 0)
-            //{
-            //    EndGame(true);
-            //    return true;
-            //}
             StartCoroutine(NewNote(notesLeft <= 0));
             return true;
         }
@@ -135,6 +145,41 @@ public class GameManager : MonoBehaviour {
         UIM.IncorrectAnswer();
         return false;
     }
+    
+    public IEnumerator NewNote(bool end)
+    {
+        yield return new WaitForSeconds(1.5f);
+        if (end)
+        {
+            EndGame(true);
+            yield break;
+        }
+        foreach(GameObject go in noteBtns)
+        {
+            go.GetComponent<ButtonUtil>().ClearSigns();
+        }
+        NM.NewNote();
+    }
+
+	IEnumerator RandomNote()
+	{
+		noteToGuess = Random.Range (1, 8);
+		yield return new WaitForSeconds (1);
+		notes [noteToGuess - 1].Play ();
+		//		int b = Random.Range (1, 9);
+		
+		//		if (b == 8 && a > 3)
+//			a = 3;
+//		Tuple<int, int> ab = new Tuple<int, int> (a, b);
+//		return ab;
+//		return a;
+	}
+
+	IEnumerator RestartGame ()
+	{
+		yield return new WaitForSeconds (3f);
+		Application.LoadLevel (Application.loadedLevel);
+	}
 
     public void EndGame(bool hasWon)
     {
@@ -147,7 +192,7 @@ public class GameManager : MonoBehaviour {
             } else {
                 StartCoroutine(RestartGame());
             }
-
+            notesLeft = notesRestartNum;
             gas++;
             if (gas > 5)
                 gas = 5;
@@ -165,39 +210,4 @@ public class GameManager : MonoBehaviour {
             PlayerPrefs.SetInt("Gas", gas);
         }
     }
-
-    public IEnumerator NewNote(bool end)
-    {
-        yield return new WaitForSeconds(1.5f);
-        if (end)
-        {
-            EndGame(true);
-            yield break;
-        }
-        foreach(GameObject go in noteBtns)
-        {
-            go.GetComponent<ButtonUtil>().ClearSigns();
-        }
-        NM.NewNote();
-    }
-	
-	IEnumerator RestartGame ()
-	{
-		yield return new WaitForSeconds (3f);
-		Application.LoadLevel (Application.loadedLevel);
-	}
-
-	IEnumerator RandomNote()
-	{
-		noteToGuess = Random.Range (1, 8);
-		yield return new WaitForSeconds (1);
-		notes [noteToGuess - 1].Play ();
-		//		int b = Random.Range (1, 9);
-		
-		//		if (b == 8 && a > 3)
-//			a = 3;
-//		Tuple<int, int> ab = new Tuple<int, int> (a, b);
-//		return ab;
-//		return a;
-	}
 }
