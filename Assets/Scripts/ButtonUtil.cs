@@ -51,4 +51,17 @@ public class ButtonUtil : MonoBehaviour {
         correct.SetActive(false);
         incorrect.SetActive(false);
     }
+
+    public void SetCar(int car)
+    {
+        GameManager.instance.SetCar(car);
+    }
+
+    public void LoadRace()
+    {
+        if(GameManager.instance.currentCar != -1)
+        {
+            LoadLevel("Race");
+        }
+    }
 }

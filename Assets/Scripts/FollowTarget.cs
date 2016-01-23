@@ -14,6 +14,7 @@ public class FollowTarget : MonoBehaviour {
 
     void Start()
     {
+        target = GameObject.FindGameObjectWithTag("Player").transform;
         if (target)
         {
             transform.position = target.position + offset;

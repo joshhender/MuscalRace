@@ -95,7 +95,6 @@ public class AICar : MonoBehaviour {
         }
         catch (System.IndexOutOfRangeException)
         {
-            Debug.Log("Caught Exception");
         }
 
     }
