@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour {
 
@@ -23,21 +24,24 @@ public class UIManager : MonoBehaviour {
 
     public void IncorrectAnswer()
     {
-        noteBtns[GameManager.instance.NM.letterToGuess].GetComponent<ButtonUtil>().correct.SetActive(true);
-        AddStrike();
+        noteBtns[GameManager.instance.NM.letterToGuess]
+            .GetComponent<ButtonUtil>().correct.SetActive(true);
+        StartCoroutine("AddStrike");
     }
 
-    void AddStrike()
+    IEnumerator AddStrike()
     {
         strikeNum++;
         strikeObjs[strikeNum - 1].SetActive(true);
+        GameManager.instance.LoseGas(10);
         if(strikeNum == 3)
         {
+            yield return new WaitForSeconds(3);
             GameManager.instance.EndGame(false);
             finishPanel.SetActive(true);
             finishText.text = "You Lose";
             strikeText.text = "Strikes: " + strikeNum.ToString();
-            return;
+            yield break;
         }
         StartCoroutine(GameManager.instance.NewNote(false));
     }
@@ -46,32 +50,35 @@ public class UIManager : MonoBehaviour {
     {
         gasSlider.value = gas;
         gasFill.color = Color.Lerp(Color.red, Color.green, (float)gas / 5);
-        if (gas <= 0)
+        if (gas < GameManager.instance.gasToRace)
             raceBtn.interactable = false;
     }
 
     public void Finish(bool hasWon)
     {
-        if(Application.loadedLevelName == "Music")
+        switch (SceneManager.GetActiveScene().name)
         {
-            finishText.text = "Finished!";
-            strikeText.text = "Strikes: " + strikeNum.ToString();
-            finishPanel.SetActive(true);
-        }
-        else if(Application.loadedLevelName == "Race")
-        {
-            if (hasWon)
-            {
-                finishText.text = "You Win!";
-                placeText.text = "Place: 1/5";
-            }
-            else
-            {
+            case "BothClefs":
+            case "TrebleClef":
+            case "BassClef":
                 finishText.text = "Finished!";
-                placeText.text = string.Format("Place: {0}/5",
-                    GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().place + 1);
-            }
-            finishPanel.SetActive(true);
+                strikeText.text = "Strikes: " + strikeNum.ToString();
+                finishPanel.SetActive(true);
+                break;
+            case "Race":
+                if (hasWon)
+                {
+                    finishText.text = "You Win!";
+                    placeText.text = "Place: 1/5";
+                }
+                else
+                {
+                    finishText.text = "Finished!";
+                    placeText.text = string.Format("Place: {0}/5",
+                        GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().place + 1);
+                }
+                finishPanel.SetActive(true);
+                break;
         }
     }
 }

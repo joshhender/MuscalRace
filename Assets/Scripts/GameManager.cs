@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using UnityEngine.Analytics;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 	
@@ -10,8 +12,9 @@ public class GameManager : MonoBehaviour {
 	public AudioSource correctSFX;
 	public int noteToGuess, notesLeft, currentCar;
 	public float timer;
-    [Range(0, 5)]
+    [Range(0, 100)]
     public int gas;
+    public int gasToRace = 20;
 
     [HideInInspector()]
     public NoteManager NM;
@@ -24,6 +27,8 @@ public class GameManager : MonoBehaviour {
 	
     Transform spawnPoint;
     int notesRestartNum = 5;
+    string[] cars = {"Purple", "Blue", "Yellow", "Pink", "Red", "Pink-Green",
+                    "Red-Yellow", "Red-Blue", "Police"};
 
 	public static GameManager instance;
     
@@ -44,38 +49,45 @@ public class GameManager : MonoBehaviour {
 	void StartUp()
 	{
 		hasStarted = false;
-        gas = PlayerPrefs.GetInt("Gas");
+        gas = PlayerPrefs.GetInt("Gas", 0);
         UIM = GameObject.Find("UIManager").GetComponent<UIManager>();
-        if(Application.loadedLevelName == "Music")
+        switch (SceneManager.GetActiveScene().name)
         {
-            notesRestartNum = notesLeft;
-            NM = GameObject.Find("NoteManager").GetComponent<NoteManager>();
-            noteBtns = UIM.noteBtns;
-        }
-        else if(Application.loadedLevelName == "Main Menu")
-        {
-            UIM.SetUpGas(gas);
-            currentCar = -1;
-            notesLeft = notesRestartNum;
-        }
-        else if(Application.loadedLevelName == "Race")
-        {
-            spawnPoint = GameObject.FindGameObjectWithTag("SpawnPoint").transform;
-            try
-            {
-                Instantiate(playerCars[currentCar], 
-                    spawnPoint.position, playerCars[currentCar].transform.rotation);
-            }
-            catch(System.IndexOutOfRangeException)
-            {
-            }
+            case "BothClefs":
+            case "TrebleClef":
+            case "BassClef":
+                notesRestartNum = notesLeft;
+                NM = GameObject.Find("NoteManager").GetComponent<NoteManager>();
+                noteBtns = UIM.noteBtns;
+                break;
+            case "MainMenu":
+                UIM.SetUpGas(gas);
+                currentCar = -1;
+                notesLeft = notesRestartNum;
+                break;
+            case "Race":
+                Analytics.CustomEvent("ChoseCar", new Dictionary<string, object>
+                {
+                    { "car", cars[currentCar] },
+                });
+                spawnPoint = GameObject.FindGameObjectWithTag("SpawnPoint").transform;
+                try
+                {
+                    Instantiate(playerCars[currentCar], 
+                        spawnPoint.position, playerCars[currentCar].transform.rotation);
+                }
+                catch(System.IndexOutOfRangeException)
+                {
+                }
+                break;
         }
     }
 
 	public void StartGame()
 	{
         hasStarted = true;
-        if(Application.loadedLevelName == "Music")
+        string scene = SceneManager.GetActiveScene().name;
+        if(scene == "BothClefs" || scene == "TrebleClef" || scene == "BassClef")
         {
             NM.NewNote();
         }
@@ -178,36 +190,67 @@ public class GameManager : MonoBehaviour {
 	IEnumerator RestartGame ()
 	{
 		yield return new WaitForSeconds (3f);
-		Application.LoadLevel (Application.loadedLevel);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 	}
+
+    public void LoseGas(int amount)
+    {
+        gas -= amount;
+        if (gas > 100)
+            gas = 100;
+        else if (gas < 0)
+            gas = 0;
+        PlayerPrefs.SetInt("Gas", gas);
+    }
 
     public void EndGame(bool hasWon)
     {
         hasStarted = false;
-        if(Application.loadedLevelName == "Music")
+        switch (SceneManager.GetActiveScene().name)
         {
-            if (hasWon)
-            {
-                UIM.Finish(hasWon);
-            } else {
-                StartCoroutine(RestartGame());
-            }
-            notesLeft = notesRestartNum;
-            gas++;
-            if (gas > 5)
-                gas = 5;
-            PlayerPrefs.SetInt("Gas", gas);
-        }
-        else if(Application.loadedLevelName == "Race")
-        {
-            Player player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-            player.place = UIM.finishedCars.IndexOf(player.gameObject);
-            UIM.Finish(player.place + 1 == 1);
-            hasStarted = false;
-            gas--;
-            if (gas < 0)
-                gas = 0;
-            PlayerPrefs.SetInt("Gas", gas);
+            case "BothClefs":
+                if (hasWon)
+                {
+                    UIM.Finish(hasWon);
+                }
+                else {
+                    StartCoroutine(RestartGame());
+                }
+                notesLeft = notesRestartNum;
+                LoseGas(-20);
+                break;
+            case "TrebleClef":
+                if (hasWon)
+                {
+                    UIM.Finish(hasWon);
+                }
+                else {
+                    StartCoroutine(RestartGame());
+                }
+                notesLeft = notesRestartNum;
+                LoseGas(-15);
+                break;
+            case "BassClef":
+                if (hasWon)
+                {
+                    UIM.Finish(hasWon);
+                } else {
+                    StartCoroutine(RestartGame());
+                }
+                notesLeft = notesRestartNum;
+                LoseGas(-15);
+                break;
+            case "Race":
+                Player player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+                player.place = UIM.finishedCars.IndexOf(player.gameObject);
+                Analytics.CustomEvent("FinishedRace", new Dictionary<string, object>
+                {
+                    {"place", player.place + 1 }
+                });
+                UIM.Finish(player.place + 1 == 1);
+                hasStarted = false;
+                LoseGas(20);
+                break;
         }
     }
 }

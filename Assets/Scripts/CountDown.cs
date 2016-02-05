@@ -5,6 +5,8 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Text))]
 public class CountDown : MonoBehaviour
 {
+    public GameObject howTo;
+
     Text text;
 
     void Start()
@@ -27,6 +29,7 @@ public class CountDown : MonoBehaviour
         {
             go.SendMessage("StartGame", SendMessageOptions.DontRequireReceiver);
         }
+        howTo.SetActive(false);
         yield return new WaitForSeconds(1);
         text.text = "";
     }

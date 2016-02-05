@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class ButtonUtil : MonoBehaviour {
 
     public GameObject correct;
     public GameObject incorrect;
+
+    public GameObject[] selectCircles;
 
 	public void StartGame()
 	{
@@ -25,12 +28,12 @@ public class ButtonUtil : MonoBehaviour {
 
     public void RestartGame()
     {
-        Application.LoadLevel(Application.loadedLevel);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void LoadLevel(string level)
     {
-        Application.LoadLevel(level);
+        SceneManager.LoadScene(level);
     }
 
     public void CheckAnswer(int noteNum)
@@ -39,6 +42,7 @@ public class ButtonUtil : MonoBehaviour {
         if(isCorrect)
         {
             correct.SetActive(true);
+            GameManager.instance.correctSFX.Play();
         }
         else
         {
@@ -54,6 +58,11 @@ public class ButtonUtil : MonoBehaviour {
 
     public void SetCar(int car)
     {
+        foreach(GameObject select in selectCircles)
+        {
+            select.SetActive(false);
+        }
+        selectCircles[car].SetActive(true);
         GameManager.instance.SetCar(car);
     }
 
