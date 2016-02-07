@@ -66,10 +66,6 @@ public class GameManager : MonoBehaviour {
                 notesLeft = notesRestartNum;
                 break;
             case "Race":
-                Analytics.CustomEvent("ChoseCar", new Dictionary<string, object>
-                {
-                    { "car", cars[currentCar] },
-                });
                 spawnPoint = GameObject.FindGameObjectWithTag("SpawnPoint").transform;
                 try
                 {
