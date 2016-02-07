@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour {
 	public float timer;
     [Range(0, 100)]
     public int gas;
-    public int gasToRace = 20;
+    public int gasToRace = 15;
 
     [HideInInspector()]
     public NoteManager NM;
