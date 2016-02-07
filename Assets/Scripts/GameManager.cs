@@ -27,8 +27,6 @@ public class GameManager : MonoBehaviour {
 	
     Transform spawnPoint;
     int notesRestartNum = 5;
-    string[] cars = {"Purple", "Blue", "Yellow", "Pink", "Red", "Pink-Green",
-                    "Red-Yellow", "Red-Blue", "Police"};
 
 	public static GameManager instance;
     
@@ -239,10 +237,6 @@ public class GameManager : MonoBehaviour {
             case "Race":
                 Player player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
                 player.place = UIM.finishedCars.IndexOf(player.gameObject);
-                Analytics.CustomEvent("FinishedRace", new Dictionary<string, object>
-                {
-                    {"place", player.place + 1 }
-                });
                 UIM.Finish(player.place + 1 == 1);
                 hasStarted = false;
                 LoseGas(20);
