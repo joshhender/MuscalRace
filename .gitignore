@@ -73,3 +73,15 @@ Network Trash Folder
 Temporary Items
 .apdisk
 *.suo
+Library/expandedItems
+*.dwlt
+Library/assetDatabase3
+*.txt
+Library/metadata/00/00000000000000004000000000000000
+Library/metadata/00/00000000000000006100000000000000
+Library/metadata/00/00000000000000006100000000000000
+*.mdb
+Library/ScriptAssemblies/Assembly-CSharp.dll
+*.dll
+Library/metadata/82/820baa3a07cc9c64387e5d80a5fb27b8
+Library/metadata/82/820baa3a07cc9c64387e5d80a5fb27b8

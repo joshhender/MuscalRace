@@ -66,17 +66,19 @@ public class Player : MonoBehaviour {
     {
         if (!GameManager.instance.hasStarted || !hasStarted)
             return;
-        var mousePosition = Vector3.zero;
-        if (Input.touchCount > 0)
-        {
-            mousePosition = Camera.main.ScreenToWorldPoint(
-                new Vector3(Input.GetTouch(0).position.x,
-                Input.GetTouch(0).position.y, 0));
+        var touchPosition = Vector3.zero;
+        touchPosition = Camera.main.ScreenToWorldPoint
+            (new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
+        //if (Input.touchCount > 0)
+        //{
+        //    touchPosition = Camera.main.ScreenToWorldPoint(
+        //        new Vector3(Input.GetTouch(0).position.x,
+        //        Input.GetTouch(0).position.y, 0));
 
-        }
-        else
-            return;
-        Quaternion rot = Quaternion.LookRotation(transform.position - mousePosition,
+        //}
+        //else
+        //    return;
+        Quaternion rot = Quaternion.LookRotation(transform.position - touchPosition,
                                                  Vector3.forward);
         transform.rotation = rot;
         transform.eulerAngles = new Vector3(0, 0, transform.eulerAngles.z);
