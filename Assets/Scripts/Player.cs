@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using UnityStandardAssets.Utility;
 
 public class Player : MonoBehaviour {
 

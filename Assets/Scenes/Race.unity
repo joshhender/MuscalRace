@@ -300,6 +300,8 @@ MonoBehaviour:
   place: 0
   currentLap: 0
   distanceToWaypoint: {x: 0, y: 0}
+  waypointCircuit: {fileID: 0}
+  waypoints: []
 --- !u!212 &82309853
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -383,6 +385,8 @@ MonoBehaviour:
   place: 0
   currentLap: 0
   distanceToWaypoint: {x: 0, y: 0}
+  waypointCircuit: {fileID: 0}
+  waypoints: []
 --- !u!61 &84209229
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -814,6 +818,8 @@ MonoBehaviour:
   place: 0
   currentLap: 0
   distanceToWaypoint: {x: 0, y: 0}
+  waypointCircuit: {fileID: 0}
+  waypoints: []
 --- !u!61 &223111492
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1621,27 +1627,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 464082735}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e566462b5755ce3478b0cddd8f454c31, type: 3}
+  m_Script: {fileID: 11500000, guid: 70852dc981465ea48bb527b9e33a87fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waypointList:
-    circuit: {fileID: 464082737}
-    items:
-    - {fileID: 1569671832}
-    - {fileID: 1803382977}
-    - {fileID: 458412011}
-    - {fileID: 1361902852}
-    - {fileID: 1872258243}
-    - {fileID: 413759216}
-    - {fileID: 1020623313}
-    - {fileID: 2001097906}
-    - {fileID: 1896733167}
-    - {fileID: 550302456}
-    - {fileID: 241254406}
-    - {fileID: 926946871}
-    - {fileID: 125994503}
-  smoothRoute: 1
-  editorVisualisationSubsteps: 100
+  Waypoints:
+  - {fileID: 1569671832}
+  - {fileID: 1803382977}
+  - {fileID: 458412011}
+  - {fileID: 1361902852}
+  - {fileID: 1872258243}
+  - {fileID: 413759216}
+  - {fileID: 1020623313}
+  - {fileID: 2001097906}
+  - {fileID: 1896733167}
+  - {fileID: 550302456}
+  - {fileID: 241254406}
+  - {fileID: 926946871}
+  - {fileID: 125994503}
 --- !u!1 &464527940
 GameObject:
   m_ObjectHideFlags: 0
@@ -3009,6 +3011,8 @@ MonoBehaviour:
   place: 0
   currentLap: 0
   distanceToWaypoint: {x: 0, y: 0}
+  waypointCircuit: {fileID: 0}
+  waypoints: []
 --- !u!61 &998793452
 BoxCollider2D:
   m_ObjectHideFlags: 0

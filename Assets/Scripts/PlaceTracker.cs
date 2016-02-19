@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityStandardAssets.Utility;
 
 public class PlaceTracker : MonoBehaviour
 {

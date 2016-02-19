@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityStandardAssets.Utility;
 
 public class AICar : MonoBehaviour {
 
@@ -17,8 +16,8 @@ public class AICar : MonoBehaviour {
     [HideInInspector]
     public Vector2 distanceToWaypoint;
 
-    WaypointCircuit waypointCircuit;
-    Transform[] waypoints;
+    public WaypointCircuit waypointCircuit;
+    public Transform[] waypoints;
     Rigidbody2D rb;
     Vector2 targetPos;
     bool finished;
