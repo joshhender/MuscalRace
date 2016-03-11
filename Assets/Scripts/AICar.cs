@@ -64,7 +64,6 @@ public class AICar : MonoBehaviour {
         if (finished)
         {
             transform.rotation = Quaternion.identity;
-            //rb.velocity = Vector2.zero;
             return;
         }
         targetPos = (Vector2) target.position;
